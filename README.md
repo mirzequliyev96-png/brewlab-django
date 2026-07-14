@@ -1,14 +1,14 @@
-# BrewLab ☕
+# BrewLab Coffee ☕
 
-A modern coffee shop web application built with Django.
+A modern coffee shop website built with Django.
 
 ## Features
 
-- Browse coffee products
+- Coffee menu
 - Shopping cart
-- Place orders
-- Django admin panel
-- Product images
+- Product categories
+- Responsive design
+- Django Admin Panel
 
 ## Technologies
 
@@ -19,6 +19,12 @@ A modern coffee shop web application built with Django.
 - JavaScript
 - SQLite
 
-## Project Status
+## Screenshots
 
-This project is under active development. New features and improvements are being added regularly.
+Screenshots will be added soon.
+
+## Run locally
+
+bash
+pip install -r requirements.txt
+python manage.py runserver
