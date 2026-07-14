@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrewLab Coffee | Craft Coffee in Baku</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --coffee-dark: #2C1810;
+            --coffee-mid: #6F4E37;
+            --coffee-light: #C8A97E;
+            --cream: #F5F1E8;
+            --accent: #E67E22;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--cream); color: var(--coffee-dark); line-height: 1.6; }
+        header { background: var(--coffee-dark); color: white; padding: 1rem 5%; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+      .logo { font-size: 1.8rem; font-weight: 700; color: var(--coffee-light); }
+      .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+      .nav-links a { color: white; text-decoration: none; transition: color 0.3s; }
+      .nav-links a:hover { color: var(--accent); }
+      .cart-link { position: relative; }
+      .cart-count { background: var(--accent); border-radius: 50%; padding: 2px 6px; font-size: 12px; position: absolute; top: -8px; right: -12px; }
+      .hero { margin-top: 70px; height: 90vh; background: linear-gradient(rgba(44,24,16,0.7), rgba(44,24,16,0.7)), url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1600') center/cover; display: flex; align-items: center; justify-content: center; text-align: center; color: white; }
+      .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; }
+      .btn { background: var(--accent); color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s; }
+      .btn:hover { transform: translateY(-2px); background: #d35400; }
+      .section { padding: 5rem 5%; max-width: 1200px; margin: 0 auto; }
+      .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem; }
+      .menu-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
+      .menu-card:hover { transform: translateY(-5px); }
+      .menu-card img { width: 100%; height: 200px; object-fit: cover; }
+      .menu-info { padding: 1.5rem; }
+      .price { color: var(--accent); font-size: 1.3rem; font-weight: bold; margin: 0.5rem 0; }
+      .desc { font-size: 0.9rem; color: #666; margin: 0.5rem 0; }
+        footer { background: var(--coffee-dark); color: white; text-align: center; padding: 2rem; }
+        @media (max-width: 768px) {
+          .hero h1 { font-size: 2rem; }
+          .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+    <div class="logo">BrewLab</div>
+    <ul class="nav-links">
+        <li><a href="#home">Ana Səhifə</a></li>
+        <li><a href="#menu">Menyu</a></li>
+        <li><a href="#about">Haqqımızda</a></li>
+        <li><a href="#contact">Əlaqə</a></li>
+        <li><a href="/sebet/">🛒 Səbət <span id="cart-count">0</span></a></li>
+    </ul>
+</nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div>
+            <h1>Əsl Kofe Təcrübəsi</h1>
+            <p>Bakının mərkəzində əl işi kofe və rahat atmosfer</p>
+            <br>
+            <button class="btn" onclick="scrollToMenu()">Menyuya Bax</button>
+        </div>
+    </section>
+
+    <section class="section" id="menu">
+        <h2 style="text-align: center; font-size: 2.5rem; color: var(--coffee-mid);">Menyumuz</h2>
+        <div class="menu-grid" id="menuGrid">
+            <!-- JS ilə API-dən gələcək -->
+        </div>
+    </section>
+
+    <section class="section" id="about" style="background: white;">
+        <h2 style="text-align: center; font-size: 2.5rem; color: var(--coffee-mid);">BrewLab Hekayəsi</h2>
+        <p style="text-align: center; max-width: 700px; margin: 2rem auto;">
+            2023-dən bəri Bakıda ən keyfiyyətli kofe dənlərindən hazırlanan içkilər təqdim edirik.
+            Hər fincan arxasında sevgi və peşəkarlıq var.
+        </p>
+    </section>
+
+    <footer id="contact">
+        <p>&copy; 2026 BrewLab Coffee. Baku, AZ | Tel: +994 12 345 67 89</p>
+        <p>API Endpoint: /api/v1/menu | Django Admin: /admin</p>
+    </footer>
+
+<script>
+// Səbət sayını yenilə
+function updateCartCount() {
+    var cart = JSON.parse(localStorage.getItem('cart')) || [];
+    var count = 0;
+    for (var i = 0; i < cart.length; i++) {
+        count += parseInt(cart[i].qty);
+    }
+    var el = document.getElementById('cart-count');
+    if (el) el.innerText = count;
+}
+
+function scrollToMenu() {
+    document.getElementById('menu').scrollIntoView({behavior: 'smooth'});
+}
+
+// Menyunu yüklə
+function loadMenu() {
+    fetch("http://127.0.0.1:8000/api/products/")
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+        var grid = document.getElementById("menuGrid");
+        grid.innerHTML = "";
+        for (var i = 0; i < data.length; i++) {
+            var p = data[i];
+            var card = document.createElement("div");
+            card.className = "menu-card";
+            var img = document.createElement("img");
+            if (p.image) {
+                img.src = p.image;
+                if (img.src.indexOf("http") !==0) {
+                    img.src = "httm://127.0.0.1:8000" + p.image;
+                }
+            }  else {
+                img.src = "https://via.placeholder.com/300"
+            }
+            img.alt = p.name;
+            var info = document.createElement("div");
+            info.className = "menu-info";
+            var h3 = document.createElement("h3");
+            h3.innerText = p.name;
+            var cat = document.createElement("p");
+            cat.style.display = "none";
+            var desc = document.createElement("p");
+            desc.className = "desc";
+            desc.innerText = p.description || "";
+            var price = document.createElement("p");
+            price.className = "price";
+            price.innerText = parseFloat(p.price).toFixed(2) + " AZN";
+            var btn = document.createElement("button");
+            btn.className = "btn";
+            btn.style = "width: 100%; margin-top: 1rem;";
+            btn.innerText = "Səbətə At";
+            btn.onclick = (function(id, name, price, image) {
+                return function() {
+                    var cart = JSON.parse(localStorage.getItem("cart")) || [];
+                    var existing = cart.find(function(item) { return item.id === id; });
+                    if (existing) {
+                        existing.qty = parseInt(existing.qty) + 1;
+                    } else {
+                        cart.push({
+                            id: id,
+                            name: name,
+                            price: parseFloat(price),
+                            image: "http://127.0.0.1:8000" + image,
+                            qty: 1
+                        });
+                    }
+                    localStorage.setItem("cart", JSON.stringify(cart));
+                    alert(name + " səbətə əlavə edildi!");
+                    updateCartCount();
+                };
+            })(p.id, p.name, p.price, p.image);
+            info.appendChild(h3);
+            info.appendChild(cat);
+            info.appendChild(desc);
+            info.appendChild(price);
+            info.appendChild(btn);
+            card.appendChild(img);
+            card.appendChild(info);
+            grid.appendChild(card);
+        }
+    })
+  .catch(function(err) {
+        console.log(err);
+        document.getElementById("menuGrid").innerHTML = "Menyu yüklənmədi";
+    });
+}
+
+// Səhifə açılanda işə sal
+updateCartCount();
+loadMenu();
+</script>
+</body>
+</html>
